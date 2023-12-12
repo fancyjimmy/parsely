@@ -1,0 +1,8 @@
+t line[9:]
+t "\"" + " ".join([word.capitalize() for word in line.split("/")[-1][0:-4].split("-")]) + "\",\"" + line + "\""
+t line + ",\"A cool Shoe that is very cool and from nike. It has a color and a size and exists as a product. Very good shoe and good price maybe looks good with a shirt and pants on. Long description\""
+t line + ",129.99"
+t line + ",Colors.orange"
+t line + ",false"
+enumerate
+t line[:line.find(" ")] + "," +line[line.find(" ")+1:]

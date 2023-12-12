@@ -1,0 +1,5 @@
+strip
+rm
+t line.split(" ")[2][:-1]
+t "<p>" + line + "</p>" + "<p>{" + line + "}</p>" 
+html div

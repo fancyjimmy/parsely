@@ -1,0 +1,4 @@
+split line.split(",")
+rm
+strip
+t "let " + line + " = data.get('" + line + "');"

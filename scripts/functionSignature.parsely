@@ -1,0 +1,4 @@
+f: line.split()
+t: line[2:]
+t: line.split(';')[0]
+

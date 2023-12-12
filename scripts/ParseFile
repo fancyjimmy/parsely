@@ -1,0 +1,4 @@
+rm
+groupUntil line[0] == ";"
+rm
+

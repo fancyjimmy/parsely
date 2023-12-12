@@ -1,0 +1,2 @@
+tw line.startswith('-'), sub(':', '\n', line)
+

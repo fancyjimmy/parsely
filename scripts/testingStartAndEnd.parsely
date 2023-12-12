@@ -1,0 +1,7 @@
+rm
+strip
+t sub(' +', '_', line)
+t line[0:20]
+t f'{line:_^20}'
+start "hallo "
+end "test"

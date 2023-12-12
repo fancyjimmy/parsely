@@ -1,0 +1,3 @@
+rm
+filter not line.startswith(' ')
+filter '~' not in line 

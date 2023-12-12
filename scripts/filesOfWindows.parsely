@@ -1,0 +1,4 @@
+t line[1:-1]
+t line.split("\\")[-1]
+t line[:-4]
+list
