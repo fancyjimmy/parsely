@@ -16,55 +16,49 @@ class App:
 
         # create textinputs and make them auto-resizing
         self.rawInput = scrolledtext.ScrolledText(self.root, width=App.colum_width, height=App.colum_height, wrap=NONE)
-        self.rawInput.grid(column=0, row=1, sticky='news')
+        self.rawInput.grid(column=0, row=0, sticky='news')
 
         self.pythonInput = scrolledtext.ScrolledText(self.root, width=App.colum_width, height=App.colum_height,
                                                      wrap=NONE)
-        self.pythonInput.grid(column=1, row=1, sticky='news')
+        self.pythonInput.grid(column=1, row=0, sticky='news')
 
         self.parsedOutput = scrolledtext.ScrolledText(self.root, width=App.colum_width, height=App.colum_height,
                                                       wrap=NONE)
-        self.parsedOutput.grid(column=2, row=1, sticky='news')
+        self.parsedOutput.grid(column=2, row=0, sticky='news')
 
         # Set grid sizing
         self.root.columnconfigure(tuple(range(3)), weight=1)
-        self.root.rowconfigure(0, weight=1, minsize=30)
-        self.root.rowconfigure(1, weight=5)
+
+        menu = Menu(self.root)
 
         # Set Title and Icon
-        icon = PhotoImage(file = 'icon.png')
+        icon = PhotoImage(file='icon.png')
         self.root.iconphoto(False, icon)
         self.root.iconbitmap("favicon.ico")
         self.root.title("parsely")
         # grid firstRow
-        self.header = [Frame(self.root) for _ in range(0, 3)]
-        for index, frame in enumerate(self.header):
-            frame.grid(row=0, column=index)
 
-        # first column
-        Button(self.header[0], text='insert from clipboard',
-               command=lambda: self.setRawInput(self.getFromClipBoard())).pack(side=LEFT)
-        Button(self.header[0], text='load from file ',
-               command=self.loadRawInputFromFile).pack(side=LEFT)
+        self.insertMenu = Menu(menu)
+        menu.add_cascade(label="Insert", menu=self.insertMenu)
+        self.insertMenu.add_command(label="Copy from Clipboard",
+                                    command=lambda: self.setRawInput(self.getFromClipBoard()))
+        self.insertMenu.add_command(label="Open File", command=self.loadRawInputFromFile)
 
-        # second column
-        Button(self.header[1], text='format',
-               command=lambda: self.parse(self.getFromRawInput(), self.getFromPythonInput())).pack(side=LEFT)
+        self.scriptMenu = Menu(menu)
+        menu.add_cascade(label="Script", menu=self.scriptMenu)
+        self.scriptMenu.add_command(label="Save Script", command=self.savePythonInput)
+        self.scriptMenu.add_command(label="Open Script", command=self.loadScriptFromFile)
 
-        Button(self.header[1], text='save script',
-               command=self.savePythonInput).pack(side=TOP)
+        self.outputMenu = Menu(menu)
+        menu.add_cascade(label="Output", menu=self.outputMenu)
+        self.outputMenu.add_command(label="Save Output", command=self.saveParsedOutput)
+        self.outputMenu.add_command(label="Copy to Clipboard ",
+                                    command=lambda: self.copyToClipBoard(self.getFromOutput()))
 
-        Button(self.header[1], text='load script',
-               command=self.loadScriptFromFile).pack(side=TOP)
+        menu.add_command(label="> Run", command=lambda: self.parse(self.getFromRawInput(), self.getFromPythonInput()))
 
-        # third column
-        Button(self.header[2], text='copy to clipboard',
-               command=lambda: self.copyToClipBoard(self.getFromOutput())).pack(side=LEFT)
-
-        Button(self.header[2], text='save to file',
-               command=self.saveParsedOutput).pack(side=LEFT)
+        self.root.config(menu=menu)
         self.root.mainloop()
-
 
     DEFAULT_PATH = "C:\Code\Python\parsely\scripts"
 
@@ -74,7 +68,6 @@ class App:
                 content = file.readlines()
                 return ''.join(content)
         return
-
 
     def loadRawInputFromFile(self):
         loaded = self.loadFromFile()
@@ -86,8 +79,7 @@ class App:
         if loaded is not None:
             self.setPythonInput(loaded)
 
-
-    #initialdir=os.getcwd()
+    # initialdir=os.getcwd()
     def saveFile(self, text, defaultFileName, ending=tuple(("all files", "*.*"))):
         with filedialog.asksaveasfile(mode='w', initialfile=defaultFileName, initialdir=App.DEFAULT_PATH,
                                       filetypes=ending) as file:
@@ -95,11 +87,11 @@ class App:
                 file.writelines(text)
 
     def savePythonInput(self):
-        self.saveFile(self.getFromPythonInput(), "script.parsely", (("Parsely File", "*.parsely"), ('Text File', '*.txt')))
+        self.saveFile(self.getFromPythonInput(), "script.parsely",
+                      (("Parsely File", "*.parsely"), ('Text File', '*.txt')))
 
     def saveParsedOutput(self):
         self.saveFile(self.getFromOutput(), 'output.txt', (("All Files", "*.*"), ('Text File', '*.txt')))
-
 
     def copyToClipBoard(self, text):
         self.root.clipboard_clear()
@@ -125,7 +117,6 @@ class App:
         self.pythonInput.delete('0.0', END)
         self.pythonInput.insert("0.0", text)
 
-
     def writeToOutput(self, text):
         self.parsedOutput.delete('0.0', END)
         self.parsedOutput.insert('0.0', text)
@@ -135,9 +126,9 @@ class App:
             compiler = self.getCompiler(script)
 
             if not compiler:
-                messagebox.showerror("Script line wasn't found", "Script line wasn't found")
+                messagebox.showerror("Script is empty", "Script is empty")
                 return
-            lines = text.split('\n')
+            lines = text.split('\n')[:-1]
 
             for operation in compiler:
                 lines = operation(lines)

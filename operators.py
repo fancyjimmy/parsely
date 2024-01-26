@@ -495,8 +495,7 @@ class Operations(Enum):
     def getOperation(rawLine: str):
         """
         returns the function which gets called onto the list and if the operation was found
-        TODO list of name for the Operation
-        :param rawLine:
+         :param rawLine:
         :return: lambda list[string]: list[string, boolean
         """
         for operator in OPERATIONS:
